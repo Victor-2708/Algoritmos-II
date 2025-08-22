@@ -1,0 +1,20 @@
+# Crear la pila con 20 nombres
+pilaNombres = []
+
+nombres = [
+    "Ana", "Luis", "Carlos", "María", "José", "Lucía", "Pedro", "Sofía", "Diego", "Valentina",
+    "Jorge", "Camila", "Andrés", "Paula", "Ricardo", "Fernanda", "Miguel", "Isabela", "Raúl", "Daniela"
+]
+
+# Push de los nombres a la pila
+for nombre in nombres:
+    pilaNombres.append(nombre)
+
+print("Pila completa:", pilaNombres)
+
+# Sacar el último nombre (LIFO)
+nombre_sacado = pilaNombres.pop()
+print(f"\nNombre sacado: {nombre_sacado}")
+
+print("\nPila después de sacar un nombre:", pilaNombres)
+
