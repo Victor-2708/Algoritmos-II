@@ -1,0 +1,109 @@
+
+import pygame
+import sys
+
+class Arbol:
+    def __init__(self, elemento):
+        self.hijos = []
+        self.elemento = elemento
+
+def agregarElemento(arbol, elemento, elementoPadre):
+    subarbol = buscarSubarbol(arbol, elementoPadre)
+    if subarbol:
+        subarbol.hijos.append(Arbol(elemento))
+
+def buscarSubarbol(arbol, elemento):
+    if arbol.elemento == elemento:
+        return arbol
+    for subarbol in arbol.hijos:
+        arbolBuscado = buscarSubarbol(subarbol, elemento)
+        if arbolBuscado:
+            return arbolBuscado
+    return None
+
+
+
+
+# Datos del árbol
+abuela = "Isabel"
+hija1 = "Yajaira"
+hija2 = "Zaida"
+hija3 = "Bertila"
+nieto1 = "Fiorella"
+nieta2 = "Nayeli"
+nieta3 = "Karen"
+nieto4 = "Adriana"
+nieto7= "Yared"
+nieto5 = "Angelo"    
+nieto6 = "Victor"    
+nieto8= "Daniela"
+arbol = Arbol(abuela)
+
+agregarElemento(arbol, hija2, abuela)
+agregarElemento(arbol, hija3, abuela)
+agregarElemento(arbol, nieto5, hija3)
+agregarElemento(arbol, nieto4, hija2)
+agregarElemento(arbol, hija1, abuela)
+agregarElemento(arbol, nieto1, hija3)
+agregarElemento(arbol, nieta2, hija1)
+agregarElemento(arbol, nieta3, hija2)
+agregarElemento(arbol, nieto6, hija1)
+agregarElemento(arbol, nieto7, hija2)
+agregarElemento(arbol, nieto8, hija1)
+
+
+# Pygame
+pygame.init()
+ANCHO, ALTO = 1200, 600
+pantalla = pygame.display.set_mode((ANCHO, ALTO))
+pygame.display.set_caption("Árbol Genealógico de Inocenta Arce")
+fuente = pygame.font.SysFont(None, 24)
+
+BLANCO = (255, 255, 255)
+NEGRO = (0, 0, 0)
+AZUL = (100, 149, 237)
+
+ESPACIO_X = 120
+ESPACIO_Y = 100
+RADIO = 30
+posiciones = {}
+
+def calcular_anchos(nodo):
+    if not nodo.hijos:
+        return 1
+    return sum(calcular_anchos(hijo) for hijo in nodo.hijos)
+
+def calcular_posiciones(nodo, x, y):
+    posiciones[nodo.elemento] = (x, y)
+    total_ancho = calcular_anchos(nodo)
+    inicio_x = x - (total_ancho * ESPACIO_X) // 2
+    desplazamiento = 0
+    for hijo in nodo.hijos:
+        ancho_hijo = calcular_anchos(hijo)
+        hijo_x = inicio_x + (desplazamiento + ancho_hijo / 2) * ESPACIO_X
+        calcular_posiciones(hijo, int(hijo_x), y + ESPACIO_Y)
+        desplazamiento += ancho_hijo
+
+def dibujar_arbol(nodo):
+    x, y = posiciones[nodo.elemento]
+    pygame.draw.circle(pantalla, AZUL, (x, y), RADIO)
+    texto = fuente.render(nodo.elemento, True, NEGRO)
+    pantalla.blit(texto, (x - texto.get_width() // 2, y - texto.get_height() // 2))
+    for hijo in nodo.hijos:
+        x_h, y_h = posiciones[hijo.elemento]
+        pygame.draw.line(pantalla, NEGRO, (x, y), (x_h, y_h), 2)
+        dibujar_arbol(hijo)
+
+calcular_posiciones(arbol, ANCHO // 2, 50)
+
+corriendo = True
+while corriendo:
+    pantalla.fill(BLANCO)
+    dibujar_arbol(arbol)
+    pygame.display.flip()
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT:
+            corriendo = False
+
+pygame.quit()
+sys.exit()
